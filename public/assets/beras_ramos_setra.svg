@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="100%" height="100%">
+  <defs>
+    <linearGradient id="riceBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f0fdf4"/>
+      <stop offset="100%" stop-color="#dcfce7"/>
+    </linearGradient>
+    <linearGradient id="sackGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="50%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#e2e8f0"/>
+    </linearGradient>
+    <filter id="sackShadow" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="300" rx="16" fill="url(#riceBg)"/>
+
+  <!-- Decorative Grain Circles -->
+  <circle cx="340" cy="60" r="14" fill="#86efac" opacity="0.4"/>
+  <circle cx="360" cy="90" r="8" fill="#86efac" opacity="0.5"/>
+  <circle cx="50" cy="230" r="12" fill="#86efac" opacity="0.4"/>
+
+  <!-- Rice Sack -->
+  <g filter="url(#sackShadow)" transform="translate(100, 30)">
+    <!-- Main Sack Body -->
+    <path d="M 20 40 Q 100 25 180 40 L 195 220 Q 100 240 5 220 Z" fill="url(#sackGrad)" stroke="#cbd5e1" stroke-width="2"/>
+    
+    <!-- Top Stitching & Fold -->
+    <path d="M 15 40 Q 100 20 185 40" stroke="#16a34a" stroke-width="6" stroke-linecap="round" fill="none"/>
+    <path d="M 15 45 Q 100 28 185 45" stroke="#ca8a04" stroke-width="2" stroke-dasharray="6 4" fill="none"/>
+
+    <!-- Green Stripe Header -->
+    <path d="M 17 55 Q 100 38 183 55 L 186 110 Q 100 95 14 110 Z" fill="#16a34a"/>
+    <text x="100" y="80" text-anchor="middle" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="900" font-size="14" fill="#ffffff" letter-spacing="2">BERAS PREMIUM</text>
+    <text x="100" y="98" text-anchor="middle" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="800" font-size="11" fill="#fef08a" letter-spacing="1">RAMOS SETRA</text>
+
+    <!-- Center Badge: Padi / Grains -->
+    <circle cx="100" cy="148" r="32" fill="#ffffff" stroke="#eab308" stroke-width="3"/>
+    <!-- Golden grain stalk -->
+    <path d="M 100 128 Q 95 145 100 168" stroke="#ca8a04" stroke-width="3" fill="none"/>
+    <circle cx="95" cy="136" r="4" fill="#eab308"/>
+    <circle cx="105" cy="140" r="4" fill="#eab308"/>
+    <circle cx="94" cy="148" r="4" fill="#eab308"/>
+    <circle cx="106" cy="152" r="4" fill="#eab308"/>
+    <circle cx="100" cy="130" r="4" fill="#eab308"/>
+
+    <!-- Weight & Quality Tag -->
+    <rect x="55" y="190" width="90" height="26" rx="13" fill="#15803d"/>
+    <text x="100" y="207" text-anchor="middle" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="900" font-size="13" fill="#ffffff">NETTO 5 KG</text>
+  </g>
+</svg>

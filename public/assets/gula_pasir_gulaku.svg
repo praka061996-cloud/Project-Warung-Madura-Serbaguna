@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f8fafc" />
+      <stop offset="100%" stop-color="#e2e8f0" />
+    </linearGradient>
+    <linearGradient id="packGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="50%" stop-color="#f1f5f9" />
+      <stop offset="100%" stop-color="#e2e8f0" />
+    </linearGradient>
+    <linearGradient id="greenAccent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#16a34a" />
+      <stop offset="100%" stop-color="#22c55e" />
+    </linearGradient>
+    <linearGradient id="goldRibbon" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#fbbf24" />
+    </linearGradient>
+    <filter id="softShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#0f172a" flood-opacity="0.12" />
+    </filter>
+  </defs>
+
+  <!-- Neutral Studio Background -->
+  <rect width="600" height="450" fill="url(#bgGrad)" />
+
+  <!-- Kitchen Surface Table Line -->
+  <ellipse cx="300" cy="400" rx="260" ry="35" fill="#cbd5e1" opacity="0.6" />
+
+  <!-- Left: Retail Sugar Pack (1 Kg) -->
+  <g transform="translate(100, 70)" filter="url(#softShadow)">
+    <!-- Package Body -->
+    <rect x="0" y="0" width="190" height="270" rx="16" fill="url(#packGrad)" stroke="#cbd5e1" stroke-width="2" />
+    
+    <!-- Top Seal Crimping -->
+    <rect x="0" y="0" width="190" height="18" rx="8" fill="#e2e8f0" />
+    <line x1="15" y1="9" x2="175" y2="9" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4 4" />
+
+    <!-- Brand Green Banner -->
+    <path d="M 0,35 L 190,35 L 190,95 L 0,95 Z" fill="url(#greenAccent)" />
+    <text x="95" y="65" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="900" font-size="24" fill="#ffffff" text-anchor="middle" letter-spacing="1">GULAKU</text>
+    <text x="95" y="85" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="700" font-size="11" fill="#fef08a" text-anchor="middle" letter-spacing="2">TEBU MURNI</text>
+
+    <!-- Transparent Window with Sugar Texture -->
+    <rect x="25" y="115" width="140" height="85" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+    <!-- Sugar Granules Pattern -->
+    <circle cx="45" cy="135" r="2.5" fill="#cbd5e1" />
+    <circle cx="65" cy="142" r="3" fill="#cbd5e1" />
+    <circle cx="95" cy="132" r="2.5" fill="#94a3b8" />
+    <circle cx="125" cy="140" r="3" fill="#cbd5e1" />
+    <circle cx="145" cy="135" r="2" fill="#cbd5e1" />
+    <circle cx="55" cy="165" r="3" fill="#94a3b8" />
+    <circle cx="85" cy="158" r="2" fill="#cbd5e1" />
+    <circle cx="115" cy="168" r="3" fill="#94a3b8" />
+    <circle cx="135" cy="160" r="2.5" fill="#cbd5e1" />
+    <circle cx="70" cy="182" r="2.5" fill="#cbd5e1" />
+    <circle cx="105" cy="185" r="3" fill="#94a3b8" />
+    <circle cx="130" cy="180" r="2" fill="#cbd5e1" />
+
+    <!-- 100% Tebu Alami Badge -->
+    <g transform="translate(95, 225)">
+      <rect x="-65" y="-12" width="130" height="24" rx="12" fill="url(#goldRibbon)" />
+      <text x="0" y="4" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="800" font-size="10" fill="#78350f" text-anchor="middle">100% ALAMI &amp; BERSIH</text>
+    </g>
+
+    <!-- Net Weight -->
+    <text x="95" y="255" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="800" font-size="12" fill="#475569" text-anchor="middle">BERAT BERSIH: 1 KG</text>
+  </g>
+
+  <!-- Right: Ceramic Bowl with White Sugar & Spoon -->
+  <g transform="translate(320, 150)" filter="url(#softShadow)">
+    <!-- Ceramic Bowl Base -->
+    <ellipse cx="140" cy="190" rx="110" ry="40" fill="#ffffff" stroke="#cbd5e1" stroke-width="2.5" />
+    
+    <!-- Sugar Mound -->
+    <path d="M 40,185 Q 140,110 240,185 Q 140,215 40,185 Z" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5" />
+
+    <!-- Sparkles on Sugar Mound -->
+    <circle cx="100" cy="160" r="3" fill="#ffffff" />
+    <circle cx="140" cy="145" r="4" fill="#ffffff" />
+    <circle cx="180" cy="165" r="3.5" fill="#ffffff" />
+    <circle cx="120" cy="175" r="2.5" fill="#ffffff" />
+    <circle cx="160" cy="178" r="3" fill="#ffffff" />
+
+    <!-- Wooden Spoon with Sugar Crystals -->
+    <g transform="translate(140, 130) rotate(-25)">
+      <!-- Handle -->
+      <path d="M 0,0 L 120,-30 L 125,-18 L 0,10 Z" fill="#d97706" rx="4" />
+      <!-- Scoop -->
+      <ellipse cx="-15" cy="8" rx="35" ry="22" fill="#b45309" />
+      <ellipse cx="-15" cy="5" rx="30" ry="17" fill="#ffffff" stroke="#fde68a" stroke-width="1.5" />
+      <!-- Granules falling -->
+      <circle cx="-5" cy="30" r="2" fill="#ffffff" />
+      <circle cx="5" cy="42" r="2.5" fill="#ffffff" />
+      <circle cx="-12" cy="50" r="1.5" fill="#ffffff" />
+    </g>
+  </g>
+
+  <!-- Tag Pill Top Right -->
+  <g transform="translate(420, 45)">
+    <rect x="0" y="0" width="145" height="32" rx="16" fill="#16a34a" />
+    <text x="72" y="20" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="800" font-size="12" fill="#ffffff" text-anchor="middle">STOK SEMBAKO</text>
+  </g>
+</svg>

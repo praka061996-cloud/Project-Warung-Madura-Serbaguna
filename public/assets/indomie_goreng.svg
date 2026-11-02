@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="100%" height="100%">
+  <defs>
+    <linearGradient id="miBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff1f2"/>
+      <stop offset="100%" stop-color="#ffe4e6"/>
+    </linearGradient>
+    <linearGradient id="noodleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f8fafc"/>
+    </linearGradient>
+    <filter id="packShadow" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="10" stdDeviation="10" flood-opacity="0.16"/>
+    </filter>
+  </defs>
+
+  <rect width="400" height="300" rx="16" fill="url(#miBg)"/>
+
+  <!-- Indomie Goreng Packet -->
+  <g filter="url(#packShadow)" transform="translate(75, 45)">
+    <!-- Main Pillow Pack -->
+    <rect x="0" y="0" width="250" height="190" rx="16" fill="url(#noodleGrad)" stroke="#e2e8f0" stroke-width="2"/>
+
+    <!-- Crimped Ends -->
+    <path d="M 0 5 L -10 15 L 0 25 L -10 35 L 0 45 L -10 55 L 0 65 L -10 75 L 0 85 L -10 95 L 0 105 L -10 115 L 0 125 L -10 135 L 0 145 L -10 155 L 0 165 L -10 175 L 0 185" stroke="#cbd5e1" stroke-width="2" fill="none"/>
+    <path d="M 250 5 L 260 15 L 250 25 L 260 35 L 250 45 L 260 55 L 250 65 L 260 75 L 250 85 L 260 95 L 250 105 L 260 115 L 250 125 L 260 135 L 250 145 L 260 155 L 250 165 L 260 175 L 250 185" stroke="#cbd5e1" stroke-width="2" fill="none"/>
+
+    <!-- Red Banner Top -->
+    <path d="M 0 0 L 250 0 L 250 60 L 0 60 Z" fill="#dc2626"/>
+    <text x="125" y="42" text-anchor="middle" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="900" font-size="28" fill="#ffffff" letter-spacing="1">Indomie</text>
+
+    <!-- Yellow / Gold Accent Curve -->
+    <path d="M 0 60 Q 125 75 250 60 L 250 72 Q 125 87 0 72 Z" fill="#eab308"/>
+
+    <!-- Mi Goreng Title -->
+    <text x="125" y="105" text-anchor="middle" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="900" font-size="18" fill="#1e293b">MI GORENG</text>
+    <text x="125" y="122" text-anchor="middle" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="800" font-size="11" fill="#dc2626">FRIED NOODLES</text>
+
+    <!-- Fried Egg & Noodle illustration hint -->
+    <ellipse cx="125" cy="152" rx="36" ry="18" fill="#fef08a" stroke="#ca8a04" stroke-width="2"/>
+    <circle cx="125" cy="152" r="9" fill="#ea580c"/>
+
+    <!-- Netto Tag -->
+    <rect x="180" y="155" width="60" height="20" rx="6" fill="#15803d"/>
+    <text x="210" y="169" text-anchor="middle" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="800" font-size="10" fill="#ffffff">85 GRAM</text>
+  </g>
+</svg>

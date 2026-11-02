@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="100%" height="100%">
+  <defs>
+    <linearGradient id="galonBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#eff6ff"/>
+      <stop offset="100%" stop-color="#dbeafe"/>
+    </linearGradient>
+    <linearGradient id="bottleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="40%" stop-color="#3b82f6"/>
+      <stop offset="80%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="capBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+    <filter id="galonShadow" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="12" stdDeviation="12" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+
+  <rect width="400" height="300" rx="16" fill="url(#galonBg)"/>
+
+  <!-- Aqua Gallon 19 Liter -->
+  <g filter="url(#galonShadow)" transform="translate(125, 20)">
+    <!-- Blue Cap with Seal Strip -->
+    <rect x="52" y="10" width="46" height="20" rx="4" fill="url(#capBlue)"/>
+    <rect x="50" y="24" width="50" height="6" rx="2" fill="#0369a1"/>
+
+    <!-- Neck -->
+    <path d="M 56 30 L 94 30 L 102 65 L 48 65 Z" fill="#60a5fa" opacity="0.9"/>
+
+    <!-- Main Barrel Body -->
+    <rect x="20" y="65" width="110" height="170" rx="28" fill="url(#bottleGrad)" stroke="#1d4ed8" stroke-width="2"/>
+
+    <!-- Gallon Grooves / Ridges -->
+    <rect x="18" y="90" width="114" height="12" rx="4" fill="#1e40af" opacity="0.5"/>
+    <rect x="18" y="170" width="114" height="12" rx="4" fill="#1e40af" opacity="0.5"/>
+
+    <!-- Center Label -->
+    <rect x="26" y="110" width="98" height="52" rx="8" fill="#ffffff"/>
+    <!-- Mountain waves logo -->
+    <path d="M 40 128 L 52 118 L 64 128 L 76 116 L 88 128" stroke="#0284c7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <text x="75" y="142" text-anchor="middle" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="900" font-size="14" fill="#0369a1" letter-spacing="1">AQUA</text>
+    <text x="75" y="154" text-anchor="middle" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="700" font-size="8" fill="#64748b">DANONE 19 LITER</text>
+
+    <!-- Handle on Side -->
+    <path d="M 130 95 C 150 95 150 145 130 145" stroke="#2563eb" stroke-width="8" stroke-linecap="round" fill="none"/>
+
+    <!-- Reflection highlight -->
+    <path d="M 32 75 L 32 215" stroke="#ffffff" stroke-width="4" stroke-linecap="round" opacity="0.4"/>
+  </g>
+</svg>

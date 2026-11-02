@@ -1,0 +1,187 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User account profile and role in Madura Serbaguna",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "name": { "type": "string", "maxLength": 100 },
+        "email": { "type": "string", "maxLength": 100 },
+        "phone": { "type": "string", "maxLength": 25 },
+        "role": { "type": "string", "enum": ["customer", "owner", "courier", "admin"] },
+        "shopId": { "type": "string" },
+        "avatarUrl": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["userId", "name", "email", "role"]
+    },
+    "Shop": {
+      "title": "Shop",
+      "description": "Warung Madura registered and verified on the platform",
+      "type": "object",
+      "properties": {
+        "shopId": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "ownerName": { "type": "string", "maxLength": 100 },
+        "name": { "type": "string", "maxLength": 100 },
+        "address": { "type": "string", "maxLength": 300 },
+        "latitude": { "type": "number" },
+        "longitude": { "type": "number" },
+        "phone": { "type": "string", "maxLength": 25 },
+        "photoUrl": { "type": "string" },
+        "openHours": { "type": "string", "maxLength": 50 },
+        "isOpen": { "type": "boolean" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "description": { "type": "string", "maxLength": 500 },
+        "rating": { "type": "number" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["ownerId", "name", "address", "latitude", "longitude", "status"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Inventory product item in a Warung Madura",
+      "type": "object",
+      "properties": {
+        "productId": { "type": "string" },
+        "shopId": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "name": { "type": "string", "maxLength": 120 },
+        "category": { "type": "string", "enum": ["sembako", "makanan_minuman", "alat_rumah_tangga", "kebutuhan_harian", "perlengkapan_mandi", "lainnya"] },
+        "price": { "type": "number" },
+        "stock": { "type": "number" },
+        "status": { "type": "string", "enum": ["available", "low", "out_of_stock"] },
+        "imageUrl": { "type": "string" },
+        "description": { "type": "string", "maxLength": 500 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["shopId", "ownerId", "name", "category", "price", "stock", "status"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Customer purchase order from a Warung Madura",
+      "type": "object",
+      "properties": {
+        "orderId": { "type": "string" },
+        "customerId": { "type": "string" },
+        "customerName": { "type": "string", "maxLength": 100 },
+        "customerPhone": { "type": "string", "maxLength": 25 },
+        "shopId": { "type": "string" },
+        "shopName": { "type": "string", "maxLength": 100 },
+        "courierId": { "type": "string" },
+        "courierName": { "type": "string", "maxLength": 100 },
+        "items": { "type": "array" },
+        "subtotal": { "type": "number" },
+        "deliveryFee": { "type": "number" },
+        "total": { "type": "number" },
+        "method": { "type": "string", "enum": ["pickup", "delivery"] },
+        "deliveryAddress": { "type": "string", "maxLength": 300 },
+        "notes": { "type": "string", "maxLength": 300 },
+        "status": { "type": "string", "enum": ["waiting_confirmation", "confirmed", "preparing", "ready_for_pickup", "waiting_courier", "on_delivery", "completed", "cancelled"] },
+        "paymentMethod": { "type": "string", "enum": ["qris", "ewallet", "bank_transfer", "cash_on_pickup", "cod"] },
+        "paymentStatus": { "type": "string", "enum": ["unpaid", "pending_verification", "paid", "refunded"] },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["customerId", "shopId", "items", "total", "method", "status", "paymentMethod", "paymentStatus"]
+    },
+    "Conversation": {
+      "title": "Conversation",
+      "description": "Chat thread between customer-warung or warung-warung",
+      "type": "object",
+      "properties": {
+        "conversationId": { "type": "string" },
+        "participants": { "type": "array" },
+        "participantNames": { "type": "object" },
+        "lastMessage": { "type": "string", "maxLength": 500 },
+        "lastSenderId": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["participants", "updatedAt"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "Single chat message inside a conversation",
+      "type": "object",
+      "properties": {
+        "messageId": { "type": "string" },
+        "senderId": { "type": "string" },
+        "senderName": { "type": "string", "maxLength": 100 },
+        "text": { "type": "string", "maxLength": 1000 },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["senderId", "text", "timestamp"]
+    },
+    "PartnershipRequest": {
+      "title": "PartnershipRequest",
+      "description": "Stock collaboration request between Warung Madura",
+      "type": "object",
+      "properties": {
+        "requestId": { "type": "string" },
+        "fromShopId": { "type": "string" },
+        "fromShopName": { "type": "string", "maxLength": 100 },
+        "fromOwnerId": { "type": "string" },
+        "toShopId": { "type": "string" },
+        "toShopName": { "type": "string", "maxLength": 100 },
+        "toOwnerId": { "type": "string" },
+        "productName": { "type": "string", "maxLength": 120 },
+        "requestedQuantity": { "type": "number" },
+        "notes": { "type": "string", "maxLength": 300 },
+        "status": { "type": "string", "enum": ["pending", "accepted", "rejected"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["fromShopId", "toShopId", "productName", "requestedQuantity", "status"]
+    },
+    "Report": {
+      "title": "Report",
+      "description": "User complaints or reports for admin review",
+      "type": "object",
+      "properties": {
+        "reportId": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string", "maxLength": 100 },
+        "subject": { "type": "string", "maxLength": 150 },
+        "detail": { "type": "string", "maxLength": 1000 },
+        "category": { "type": "string" },
+        "status": { "type": "string", "enum": ["open", "investigating", "resolved"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["userId", "subject", "detail", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "UserProfile" },
+      "description": "User profile store indexed by user UID"
+    },
+    "/shops/{shopId}": {
+      "schema": { "$ref": "Shop" },
+      "description": "Directory of registered and approved Warung Madura"
+    },
+    "/products/{productId}": {
+      "schema": { "$ref": "Product" },
+      "description": "Catalog of products offered across warungs"
+    },
+    "/orders/{orderId}": {
+      "schema": { "$ref": "Order" },
+      "description": "Customer orders with status and delivery lifecycle"
+    },
+    "/conversations/{conversationId}": {
+      "schema": { "$ref": "Conversation" },
+      "description": "Chat conversations between customers, warungs, and couriers"
+    },
+    "/conversations/{conversationId}/messages/{messageId}": {
+      "schema": { "$ref": "Message" },
+      "description": "Messages inside each conversation"
+    },
+    "/partnershipRequests/{requestId}": {
+      "schema": { "$ref": "PartnershipRequest" },
+      "description": "Stock borrowing and collaboration requests between warungs"
+    },
+    "/reports/{reportId}": {
+      "schema": { "$ref": "Report" },
+      "description": "Customer and owner reports to administration"
+    }
+  }
+}

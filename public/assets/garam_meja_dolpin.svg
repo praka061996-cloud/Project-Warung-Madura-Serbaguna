@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="100%" height="100%">
+  <defs>
+    <linearGradient id="saltBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#f1f5f9"/>
+    </linearGradient>
+    <linearGradient id="packGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f1f5f9"/>
+    </linearGradient>
+    <filter id="saltShadow" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-opacity="0.14"/>
+    </filter>
+  </defs>
+
+  <rect width="400" height="300" rx="16" fill="url(#saltBg)"/>
+
+  <!-- Salt Pack -->
+  <g filter="url(#saltShadow)" transform="translate(115, 30)">
+    <rect x="0" y="0" width="170" height="230" rx="14" fill="url(#packGrad)" stroke="#0284c7" stroke-width="2"/>
+    
+    <!-- Top Blue Wave -->
+    <path d="M 0 0 L 170 0 L 170 65 Q 85 85 0 65 Z" fill="#0284c7"/>
+    <text x="85" y="32" text-anchor="middle" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="900" font-size="16" fill="#ffffff" letter-spacing="1">GARAM MEJA</text>
+    <text x="85" y="50" text-anchor="middle" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="800" font-size="10" fill="#bae6fd" letter-spacing="2">BERIODIUM</text>
+
+    <!-- Dolphin Logo Icon -->
+    <circle cx="85" cy="115" r="28" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>
+    <!-- Dolphin shape -->
+    <path d="M 70 120 C 75 105 95 105 100 115 C 96 112 88 116 85 124 C 80 123 75 125 70 120 Z" fill="#0284c7"/>
+
+    <!-- Brand Name -->
+    <text x="85" y="165" text-anchor="middle" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="900" font-size="17" fill="#0369a1" letter-spacing="1">DOLPIN</text>
+    <text x="85" y="180" text-anchor="middle" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="700" font-size="9" fill="#64748b">Putih, Bersih &amp; Gurih</text>
+
+    <!-- Netto Badge -->
+    <rect x="45" y="196" width="80" height="22" rx="6" fill="#0284c7"/>
+    <text x="85" y="211" text-anchor="middle" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="800" font-size="10" fill="#ffffff">NETTO 250g</text>
+  </g>
+</svg>

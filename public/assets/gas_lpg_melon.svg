@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGas" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f0fdf4" />
+      <stop offset="100%" stop-color="#dcfce7" />
+    </linearGradient>
+    <linearGradient id="melonGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#22c55e" />
+      <stop offset="35%" stop-color="#4ade80" />
+      <stop offset="70%" stop-color="#16a34a" />
+      <stop offset="100%" stop-color="#15803d" />
+    </linearGradient>
+    <linearGradient id="collarGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#15803d" />
+      <stop offset="50%" stop-color="#22c55e" />
+      <stop offset="100%" stop-color="#14532d" />
+    </linearGradient>
+    <linearGradient id="flameGrad" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#2563eb" />
+      <stop offset="50%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#ffffff" />
+    </linearGradient>
+    <filter id="dropShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#0f172a" flood-opacity="0.14" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="600" height="450" fill="url(#bgGas)" />
+
+  <!-- Ground Shadow -->
+  <ellipse cx="300" cy="395" rx="180" ry="25" fill="#94a3b8" opacity="0.45" />
+
+  <!-- Gas 3Kg Melon Cylinder -->
+  <g transform="translate(180, 50)" filter="url(#dropShadow)">
+    <!-- Top Carry Collar Handle -->
+    <path d="M 50,75 L 50,45 C 50,30 75,20 120,20 C 165,20 190,30 190,45 L 190,75 Z" fill="url(#collarGrad)" stroke="#166534" stroke-width="3" />
+    <ellipse cx="120" cy="45" rx="45" ry="14" fill="#0f172a" opacity="0.3" />
+    
+    <!-- Red Safety Seal Valve in Center -->
+    <rect x="110" y="32" width="20" height="24" rx="4" fill="#dc2626" />
+    <circle cx="120" cy="44" r="5" fill="#f87171" />
+    <circle cx="120" cy="28" r="4" fill="#cbd5e1" />
+
+    <!-- Carry Handle Cutouts -->
+    <rect x="65" y="42" width="25" height="12" rx="6" fill="#f0fdf4" />
+    <rect x="150" y="42" width="25" height="12" rx="6" fill="#f0fdf4" />
+
+    <!-- Main Spherical/Cylindrical Body (Melon Shape) -->
+    <ellipse cx="120" cy="130" rx="100" ry="60" fill="url(#melonGrad)" stroke="#166534" stroke-width="3" />
+    <rect x="20" y="130" width="200" height="140" fill="url(#melonGrad)" stroke="#166534" stroke-width="3" />
+    <ellipse cx="120" cy="270" rx="100" ry="45" fill="url(#melonGrad)" stroke="#166534" stroke-width="3" />
+
+    <!-- Middle Seam Ring -->
+    <path d="M 20,185 C 50,195 190,195 220,185" fill="none" stroke="#14532d" stroke-width="4" />
+
+    <!-- Bottom Stand Ring Foot -->
+    <path d="M 45,280 L 45,310 C 45,325 80,335 120,335 C 160,335 195,325 195,310 L 195,280 Z" fill="url(#collarGrad)" stroke="#166534" stroke-width="3" />
+    <!-- Vent Holes in Base Ring -->
+    <ellipse cx="75" cy="305" rx="12" ry="7" fill="#0f172a" opacity="0.35" />
+    <ellipse cx="120" cy="312" rx="14" ry="7" fill="#0f172a" opacity="0.35" />
+    <ellipse cx="165" cy="305" rx="12" ry="7" fill="#0f172a" opacity="0.35" />
+
+    <!-- PERTAMINA Logo / White Stencil -->
+    <g transform="translate(120, 145)">
+      <!-- Official Style Pertamina / LPG Emblem -->
+      <text x="0" y="0" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="900" font-size="28" fill="#ffffff" text-anchor="middle" letter-spacing="2">PERTAMINA</text>
+      <text x="0" y="32" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="900" font-size="34" fill="#ffffff" text-anchor="middle" letter-spacing="1">LPG 3 KG</text>
+      <rect x="-85" y="44" width="170" height="2" fill="#ffffff" opacity="0.8" />
+      <text x="0" y="58" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="800" font-size="9" fill="#ffffff" text-anchor="middle" letter-spacing="0.5">HANYA UNTUK MASYARAKAT MISKIN</text>
+      <text x="0" y="70" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="800" font-size="8" fill="#fef08a" text-anchor="middle" letter-spacing="0.5">BERAT KOSONG: 5.0 KG · ISI: 3.0 KG</text>
+    </g>
+
+    <!-- Highlight Reflection on Cylinder -->
+    <path d="M 45,110 C 40,160 40,240 45,260" stroke="#86efac" stroke-width="12" stroke-linecap="round" opacity="0.45" />
+  </g>
+
+  <!-- Right Floating Quality Badge with Blue Flame -->
+  <g transform="translate(425, 120)">
+    <rect x="0" y="0" width="145" height="150" rx="20" fill="#ffffff" stroke="#e2e8f0" stroke-width="2" filter="url(#dropShadow)" />
+    <!-- Blue Gas Flame Icon -->
+    <circle cx="72" cy="50" r="32" fill="#eff6ff" />
+    <path d="M 72,25 C 60,45 52,55 52,68 C 52,79 61,87 72,87 C 83,87 92,79 92,68 C 92,55 84,45 72,25 Z" fill="url(#flameGrad)" />
+    <path d="M 72,48 C 66,58 62,64 62,71 C 62,76 66,80 72,80 C 78,80 82,76 82,71 C 82,64 78,58 72,48 Z" fill="#ffffff" opacity="0.85" />
+    
+    <text x="72" y="105" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="900" font-size="13" fill="#0f172a" text-anchor="middle">SEGEL RESMI</text>
+    <text x="72" y="122" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="700" font-size="10" fill="#16a34a" text-anchor="middle">API BIRU PANAS</text>
+    <text x="72" y="136" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="700" font-size="9" fill="#64748b" text-anchor="middle">SNI TERUJI</text>
+  </g>
+</svg>

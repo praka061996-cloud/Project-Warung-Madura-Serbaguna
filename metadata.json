@@ -1,0 +1,8 @@
+{
+  "name": "Madura Serbaguna",
+  "description": "Platform digital marketplace warung Madura se-Indonesia dengan peta interaktif, manajemen stok, pemesanan, pengantaran kurir, dan kerja sama antarwarung.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
