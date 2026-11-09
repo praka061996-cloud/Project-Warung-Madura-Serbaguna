@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext.tsx';
 import {
   Store,
@@ -9,10 +9,11 @@ import {
   ArrowRight,
   ShieldCheck,
   Truck,
-  ShoppingBag,
   AlertCircle,
   Sparkles,
   CheckCircle2,
+  Info,
+  UserCheck,
 } from 'lucide-react';
 
 interface LoginPageProps {
@@ -20,21 +21,27 @@ interface LoginPageProps {
 }
 
 export const LoginPage: React.FC<LoginPageProps> = ({ onSwitchToRegister }) => {
-  const { loginWithEmail, showToast } = useApp();
+  const { loginWithEmail, prefilledEmail, authSuccessMsg, setAuthSuccessMsg } = useApp();
 
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(prefilledEmail || '');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  useEffect(() => {
+    if (prefilledEmail) {
+      setEmail(prefilledEmail);
+    }
+  }, [prefilledEmail]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
 
     if (!email.trim()) {
-      setErrorMessage('Alamat email wajib diisi.');
+      setErrorMessage('Alamat Gmail atau email wajib diisi.');
       return;
     }
     if (!password) {
@@ -51,12 +58,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSwitchToRegister }) => {
     }
   };
 
-  const handleQuickLogin = (demoEmail: string, demoPass: string) => {
-    setEmail(demoEmail);
-    setPassword(demoPass);
-    setErrorMessage('');
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-950 to-blue-950 flex items-center justify-center p-4 sm:p-6 lg:p-8">
       {/* Decorative background glow */}
@@ -68,10 +69,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSwitchToRegister }) => {
 
       <div className="relative w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 border border-slate-100">
         {/* ============================================================ */}
-        {/* LEFT PANEL: Branding & Visuals (Inspired by Reference Image) */}
+        {/* LEFT PANEL: Branding & Visuals                               */}
         {/* ============================================================ */}
         <div className="hidden lg:flex lg:col-span-5 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 p-10 text-white flex-col justify-between relative overflow-hidden">
-          {/* Glowing concentric decorative rings (matches FrostoReach reference) */}
+          {/* Glowing concentric decorative rings */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-30">
             <div className="w-[450px] h-[450px] rounded-full border border-white/20 flex items-center justify-center">
               <div className="w-[340px] h-[340px] rounded-full border border-white/30 flex items-center justify-center">
@@ -135,7 +136,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSwitchToRegister }) => {
               <div>
                 <h3 className="font-bold text-sm text-white">Kerja Sama Antarwarung</h3>
                 <p className="text-xs text-blue-100 mt-0.5">
-                  Ekosistem solidaritas pemilik warung Madura untuk oper & pinjam stok.
+                  Ekosistem solidaritas pemilik warung Madura untuk oper & pinjam stok sembako.
                 </p>
               </div>
             </div>
@@ -180,54 +181,62 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSwitchToRegister }) => {
                 Selamat Datang Kembali
               </h2>
               <p className="text-sm text-slate-500 mt-1">
-                Silakan masuk dengan akun Anda untuk mengakses katalog warung, stok barang, dan pemesanan.
+                Silakan masuk dengan akun terdaftar Anda untuk mengakses etalase warung, stok barang, dan pemesanan.
               </p>
             </div>
 
-            {/* Error Message Box */}
+            {/* Success Message Banner (e.g. After Successful Registration) */}
+            {authSuccessMsg && (
+              <div className="mb-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-start gap-3">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <h4 className="text-xs font-bold text-emerald-900">Pendaftaran Berhasil</h4>
+                  <p className="text-xs text-emerald-700 mt-0.5 font-medium">{authSuccessMsg}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Error Message Banner */}
             {errorMessage && (
               <div className="mb-6 p-4 rounded-2xl bg-red-50 border border-red-200 flex items-start gap-3 animate-shake">
                 <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <h4 className="text-xs font-bold text-red-900">Gagal Masuk</h4>
-                  <p className="text-xs text-red-700 mt-0.5">{errorMessage}</p>
+                  <p className="text-xs text-red-700 mt-0.5 font-medium">{errorMessage}</p>
                 </div>
               </div>
             )}
 
             {/* Login Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Email Input */}
+              {/* Email / Gmail Input */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  Alamat Email
+                  Alamat Gmail / Email
                 </label>
                 <div className="relative">
                   <Mail className="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                   <input
                     type="email"
                     required
-                    placeholder="nama@email.com"
+                    placeholder="nama@gmail.com"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (errorMessage) setErrorMessage('');
+                      if (authSuccessMsg) setAuthSuccessMsg('');
+                    }}
                     className="w-full pl-11 pr-4 py-3 bg-slate-50 rounded-xl border border-slate-200 focus:border-blue-600 focus:bg-white text-sm font-medium focus:outline-hidden focus:ring-4 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
                   />
                 </div>
               </div>
 
-              {/* Password Input */}
+              {/* Password Input with Show/Hide Toggle */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label className="block text-xs font-bold text-slate-700">
                     Password
                   </label>
-                  <button
-                    type="button"
-                    onClick={() => showToast('Gunakan opsi akun demo atau hubungi admin@maduraserbaguna.id untuk reset.', 'info')}
-                    className="text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors cursor-pointer"
-                  >
-                    Lupa Password?
-                  </button>
                 </div>
                 <div className="relative">
                   <Lock className="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -236,14 +245,18 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSwitchToRegister }) => {
                     required
                     placeholder="Masukkan password akun Anda"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      if (errorMessage) setErrorMessage('');
+                    }}
                     className="w-full pl-11 pr-12 py-3 bg-slate-50 rounded-xl border border-slate-200 focus:border-blue-600 focus:bg-white text-sm font-medium focus:outline-hidden focus:ring-4 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 cursor-pointer rounded-lg"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-slate-700 cursor-pointer rounded-lg hover:bg-slate-100 transition-colors"
                     aria-label={showPassword ? 'Sembunyikan password' : 'Lihat password'}
+                    title={showPassword ? 'Sembunyikan password' : 'Lihat password'}
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -281,59 +294,16 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSwitchToRegister }) => {
               </button>
             </form>
 
-            {/* Quick Testing Credentials Box */}
-            <div className="mt-6 pt-5 border-t border-slate-100">
-              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2.5">
-                Pilih Akun Uji Coba Cepat:
-              </p>
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <button
-                  type="button"
-                  onClick={() => handleQuickLogin('budi@gmail.com', 'password123')}
-                  className="p-2.5 rounded-xl border border-slate-200 hover:border-blue-400 hover:bg-blue-50/50 text-left transition-colors cursor-pointer group"
-                >
-                  <div className="flex items-center gap-1.5 font-bold text-slate-800 group-hover:text-blue-600">
-                    <ShoppingBag className="w-3.5 h-3.5 text-blue-600" />
-                    <span>Pelanggan</span>
-                  </div>
-                  <p className="text-[10px] text-slate-400 truncate">budi@gmail.com</p>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleQuickLogin('cakrohim@warungmadura.id', 'password123')}
-                  className="p-2.5 rounded-xl border border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/50 text-left transition-colors cursor-pointer group"
-                >
-                  <div className="flex items-center gap-1.5 font-bold text-slate-800 group-hover:text-indigo-600">
-                    <Store className="w-3.5 h-3.5 text-indigo-600" />
-                    <span>Pemilik Warung</span>
-                  </div>
-                  <p className="text-[10px] text-slate-400 truncate">cakrohim@warungmadura.id</p>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleQuickLogin('slamet@madurakilat.id', 'password123')}
-                  className="p-2.5 rounded-xl border border-slate-200 hover:border-amber-400 hover:bg-amber-50/50 text-left transition-colors cursor-pointer group"
-                >
-                  <div className="flex items-center gap-1.5 font-bold text-slate-800 group-hover:text-amber-600">
-                    <Truck className="w-3.5 h-3.5 text-amber-600" />
-                    <span>Kurir Kilat</span>
-                  </div>
-                  <p className="text-[10px] text-slate-400 truncate">slamet@madurakilat.id</p>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleQuickLogin('praka061996@gmail.com', 'admin123456')}
-                  className="p-2.5 rounded-xl border border-slate-200 hover:border-purple-400 hover:bg-purple-50/50 text-left transition-colors cursor-pointer group"
-                >
-                  <div className="flex items-center gap-1.5 font-bold text-slate-800 group-hover:text-purple-600">
-                    <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />
-                    <span>Administrator</span>
-                  </div>
-                  <p className="text-[10px] text-slate-400 truncate">praka061996@gmail.com</p>
-                </button>
+            {/* Informational Verification Card */}
+            <div className="mt-6 p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-3">
+              <div className="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+                <UserCheck className="w-4 h-4" />
+              </div>
+              <div className="text-xs text-slate-600">
+                <p className="font-bold text-slate-800 mb-0.5">Autentikasi Terverifikasi</p>
+                <p className="leading-relaxed text-[11px]">
+                  Hanya akun yang telah terdaftar yang dapat masuk. Jika belum memiliki akun, silakan klik tombol <span className="font-bold text-blue-700">Daftar sekarang</span> di bawah ini.
+                </p>
               </div>
             </div>
           </div>

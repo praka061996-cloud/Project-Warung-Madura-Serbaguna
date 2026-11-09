@@ -32,7 +32,6 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSwitchToLogin }) =
     password: '',
     confirmPassword: '',
     role: 'customer' as 'customer' | 'owner' | 'courier',
-    agreeTerms: false,
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -44,44 +43,42 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSwitchToLogin }) =
     e.preventDefault();
     setErrorMessage('');
 
-    // Validation
+    // 1. Validate full name
     if (!formData.name.trim()) {
       setErrorMessage('Nama lengkap wajib diisi.');
       return;
     }
 
+    // 2. Validate email format (Gmail / Email)
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!formData.email.trim() || !emailRegex.test(formData.email)) {
-      setErrorMessage('Format alamat email tidak valid.');
+    if (!formData.email.trim() || !emailRegex.test(formData.email.trim())) {
+      setErrorMessage('Format alamat Gmail atau email tidak valid.');
       return;
     }
 
-    const cleanPhone = formData.phone.replace(/[\s-]/g, '');
-    if (!cleanPhone || !/^[0-9+]{9,15}$/.test(cleanPhone)) {
-      setErrorMessage('Nomor HP/WhatsApp harus berupa 9-15 digit angka.');
+    // 3. Validate phone number (free input without OTP)
+    if (!formData.phone.trim()) {
+      setErrorMessage('Nomor telepon wajib diisi.');
       return;
     }
 
+    // 4. Validate password length (min 6 characters per Firebase)
     if (!formData.password || formData.password.length < 6) {
-      setErrorMessage('Password minimal 6 karakter.');
+      setErrorMessage('Password minimal 6 karakter sesuai persyaratan Firebase.');
       return;
     }
 
+    // 5. Validate confirm password match
     if (formData.password !== formData.confirmPassword) {
       setErrorMessage('Konfirmasi password tidak cocok dengan password yang dimasukkan.');
       return;
     }
 
-    if (!formData.agreeTerms) {
-      setErrorMessage('Anda harus menyetujui Syarat & Ketentuan Madura Serbaguna.');
-      return;
-    }
-
     setIsLoading(true);
     const result = await registerWithEmail({
-      name: formData.name,
-      email: formData.email,
-      phone: formData.phone,
+      name: formData.name.trim(),
+      email: formData.email.trim(),
+      phone: formData.phone.trim(),
       password: formData.password,
       role: formData.role,
     });
@@ -140,7 +137,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSwitchToLogin }) =
           {/* Role Explanations */}
           <div className="relative z-10 space-y-3.5 my-6">
             <p className="text-xs font-bold uppercase tracking-wider text-blue-200 mb-2">
-              Pilihan Peran Pengguna:
+              Pilihan Peran Akun:
             </p>
 
             <div
@@ -161,7 +158,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSwitchToLogin }) =
                 )}
               </div>
               <p className="text-xs text-blue-100">
-                Beli sembako, beras, gas melon 3kg, dan galon aqua dengan kurir kilat atau ambil sendiri.
+                Beli sembako, beras ramos, gas LPG melon 3kg, dan air galon dengan opsi antar kurir atau ambil sendiri.
               </p>
             </div>
 
@@ -205,7 +202,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSwitchToLogin }) =
                 )}
               </div>
               <p className="text-xs text-blue-100">
-                Ambil pesanan pengantaran dengan tarif adil dan rute terpendek di wilayah operasional Anda.
+                Ambil pesanan pengantaran dengan tarif jelas dan rute terdekat di wilayah operasional Anda.
               </p>
             </div>
           </div>
@@ -213,7 +210,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSwitchToLogin }) =
           {/* Bottom Security Note */}
           <div className="relative z-10 pt-4 border-t border-white/15 flex items-center gap-2 text-xs text-blue-200">
             <ShieldCheck className="w-4 h-4 text-emerald-300 shrink-0" />
-            <span>Data Anda tersimpan secara aman dengan Firebase Authentication & Firestore.</span>
+            <span>Pendaftaran langsung tanpa verifikasi OTP atau kirim kode Gmail.</span>
           </div>
         </div>
 
@@ -239,7 +236,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSwitchToLogin }) =
                 Buat Akun Baru
               </h2>
               <p className="text-sm text-slate-500 mt-1">
-                Lengkapi data di bawah ini untuk mendaftar di ekosistem digital Madura Serbaguna.
+                Daftar akun MADURA SERBAGUNA langsung tanpa verifikasi OTP/SMS.
               </p>
             </div>
 
@@ -249,14 +246,14 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSwitchToLogin }) =
                 <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <h4 className="text-xs font-bold text-red-900">Pendaftaran Gagal</h4>
-                  <p className="text-xs text-red-700 mt-0.5">{errorMessage}</p>
+                  <p className="text-xs text-red-700 mt-0.5 font-medium">{errorMessage}</p>
                 </div>
               </div>
             )}
 
             {/* Registration Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Full Name */}
+              {/* Kolom 1: Nama Lengkap */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">
                   Nama Lengkap
@@ -268,26 +265,32 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSwitchToLogin }) =
                     required
                     placeholder="Contoh: Budi Santoso / Cak Rohim"
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, name: e.target.value });
+                      if (errorMessage) setErrorMessage('');
+                    }}
                     className="w-full pl-10 pr-4 py-2.5 bg-slate-50 rounded-xl border border-slate-200 focus:border-blue-600 focus:bg-white text-xs sm:text-sm font-medium focus:outline-hidden focus:ring-4 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
                   />
                 </div>
               </div>
 
-              {/* Email & Phone grid */}
+              {/* Kolom 2 & 3: Alamat Gmail & Nomor Telepon grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Alamat Email
+                    Alamat Gmail / Email
                   </label>
                   <div className="relative">
                     <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                     <input
                       type="email"
                       required
-                      placeholder="nama@email.com"
+                      placeholder="nama@gmail.com"
                       value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      onChange={(e) => {
+                        setFormData({ ...formData, email: e.target.value });
+                        if (errorMessage) setErrorMessage('');
+                      }}
                       className="w-full pl-10 pr-4 py-2.5 bg-slate-50 rounded-xl border border-slate-200 focus:border-blue-600 focus:bg-white text-xs sm:text-sm font-medium focus:outline-hidden focus:ring-4 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
                     />
                   </div>
@@ -295,23 +298,26 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSwitchToLogin }) =
 
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Nomor WhatsApp / HP
+                    Nomor Telepon / WhatsApp
                   </label>
                   <div className="relative">
                     <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                     <input
                       type="tel"
                       required
-                      placeholder="081234567890"
+                      placeholder="081234567890 (bebas isi)"
                       value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      onChange={(e) => {
+                        setFormData({ ...formData, phone: e.target.value });
+                        if (errorMessage) setErrorMessage('');
+                      }}
                       className="w-full pl-10 pr-4 py-2.5 bg-slate-50 rounded-xl border border-slate-200 focus:border-blue-600 focus:bg-white text-xs sm:text-sm font-medium focus:outline-hidden focus:ring-4 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Role Selection on Mobile & Form */}
+              {/* Peran Pengguna (Role Selection) */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1.5">
                   Daftar Sebagai Peran:
@@ -367,7 +373,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSwitchToLogin }) =
                 </div>
               </div>
 
-              {/* Password & Confirm Password grid */}
+              {/* Kolom 4 & 5: Password & Konfirmasi Password grid dengan Fitur Tampil/Sembunyikan */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
@@ -380,13 +386,18 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSwitchToLogin }) =
                       required
                       placeholder="Min. 6 karakter"
                       value={formData.password}
-                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                      onChange={(e) => {
+                        setFormData({ ...formData, password: e.target.value });
+                        if (errorMessage) setErrorMessage('');
+                      }}
                       className="w-full pl-10 pr-10 py-2.5 bg-slate-50 rounded-xl border border-slate-200 focus:border-blue-600 focus:bg-white text-xs sm:text-sm font-medium focus:outline-hidden focus:ring-4 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1 cursor-pointer"
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+                      title={showPassword ? 'Sembunyikan password' : 'Lihat password'}
+                      aria-label={showPassword ? 'Sembunyikan password' : 'Lihat password'}
                     >
                       {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                     </button>
@@ -404,13 +415,18 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSwitchToLogin }) =
                       required
                       placeholder="Ulangi password"
                       value={formData.confirmPassword}
-                      onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                      onChange={(e) => {
+                        setFormData({ ...formData, confirmPassword: e.target.value });
+                        if (errorMessage) setErrorMessage('');
+                      }}
                       className="w-full pl-10 pr-10 py-2.5 bg-slate-50 rounded-xl border border-slate-200 focus:border-blue-600 focus:bg-white text-xs sm:text-sm font-medium focus:outline-hidden focus:ring-4 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1 cursor-pointer"
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+                      title={showConfirmPassword ? 'Sembunyikan konfirmasi password' : 'Lihat konfirmasi password'}
+                      aria-label={showConfirmPassword ? 'Sembunyikan konfirmasi password' : 'Lihat konfirmasi password'}
                     >
                       {showConfirmPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                     </button>
@@ -418,26 +434,11 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSwitchToLogin }) =
                 </div>
               </div>
 
-              {/* Terms Checkbox */}
-              <div className="flex items-start pt-1">
-                <input
-                  id="agree_terms"
-                  type="checkbox"
-                  checked={formData.agreeTerms}
-                  onChange={(e) => setFormData({ ...formData, agreeTerms: e.target.checked })}
-                  className="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer mt-0.5"
-                />
-                <label htmlFor="agree_terms" className="ml-2 text-xs text-slate-600 cursor-pointer leading-relaxed">
-                  Saya menyetujui <span className="font-bold text-blue-600">Syarat &amp; Ketentuan</span> serta{' '}
-                  <span className="font-bold text-blue-600">Kebijakan Privasi</span> platform MADURA SERBAGUNA.
-                </label>
-              </div>
-
               {/* Submit Button */}
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-700 hover:to-indigo-800 text-white font-extrabold text-sm shadow-lg shadow-blue-500/25 hover:shadow-xl transition-all cursor-pointer flex items-center justify-center gap-2 group disabled:opacity-60"
+                className="w-full mt-2 py-3.5 px-6 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-700 hover:to-indigo-800 text-white font-extrabold text-sm shadow-lg shadow-blue-500/25 hover:shadow-xl transition-all cursor-pointer flex items-center justify-center gap-2 group disabled:opacity-60"
               >
                 {isLoading ? (
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

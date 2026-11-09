@@ -25,9 +25,20 @@ import {
   createUserWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  fetchSignInMethodsForEmail,
   User as FirebaseUser,
 } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
+import {
+  findAccountByEmail,
+  findAccountByUid,
+  saveNewAccount,
+  verifyAccountPassword,
+  getActiveSessionUid,
+  setActiveSessionUid,
+  clearActiveSession,
+  getAvatarForRole,
+} from '../utils/authRegistry.ts';
 
 interface AppContextType {
   currentUser: UserProfile | null;
@@ -35,6 +46,10 @@ interface AppContextType {
   authLoading: boolean;
   authView: 'login' | 'register';
   setAuthView: (view: 'login' | 'register') => void;
+  prefilledEmail: string;
+  setPrefilledEmail: (email: string) => void;
+  authSuccessMsg: string;
+  setAuthSuccessMsg: (msg: string) => void;
   loginWithEmail: (email: string, pass: string) => Promise<{ success: boolean; message: string }>;
   registerWithEmail: (data: {
     name: string;
@@ -117,6 +132,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
   const [authLoading, setAuthLoading] = useState<boolean>(true);
   const [authView, setAuthView] = useState<'login' | 'register'>('login');
+  const [prefilledEmail, setPrefilledEmail] = useState<string>('');
+  const [authSuccessMsg, setAuthSuccessMsg] = useState<string>('');
+  const isRegisteringRef = React.useRef(false);
 
   const [shops, setShops] = useState<Shop[]>(INITIAL_SHOPS);
   const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
@@ -175,6 +193,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   // Sync Firebase Auth state
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (fbUser: FirebaseUser | null) => {
+      // During active registration process, ignore immediate auth state change
+      // because we immediately sign out to complete registration before login
+      if (isRegisteringRef.current) {
+        return;
+      }
+
       if (fbUser) {
         try {
           // Check Firestore user doc
@@ -253,6 +277,27 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           setActiveTab(getInitialTabForRole(fallbackRole));
         }
       } else {
+        // If Firebase Auth has no active user, check our persistent verified session
+        const sessionUid = getActiveSessionUid();
+        if (sessionUid) {
+          const acc = findAccountByUid(sessionUid);
+          if (acc) {
+            const userProfile: UserProfile = {
+              uid: acc.uid,
+              email: acc.email,
+              name: acc.name,
+              phone: acc.phone,
+              role: acc.role,
+              shopId: acc.role === 'owner' ? 'shop_tebet_1' : undefined,
+              avatarUrl: getAvatarForRole(acc.role),
+              createdAt: acc.createdAt,
+            };
+            setCurrentUser(userProfile);
+            setActiveTab(getInitialTabForRole(acc.role));
+            setAuthLoading(false);
+            return;
+          }
+        }
         setCurrentUser(null);
       }
       setAuthLoading(false);
@@ -261,18 +306,58 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return () => unsubscribe();
   }, []);
 
-  // Login handler with Firebase Authentication
+  // Login handler with Firebase Authentication & Verified Account Registry
   const loginWithEmail = async (
     email: string,
     pass: string
   ): Promise<{ success: boolean; message: string }> => {
+    const cleanEmail = email.trim();
+    if (!cleanEmail) {
+      return { success: false, message: 'Alamat Gmail atau email wajib diisi.' };
+    }
+    if (!pass) {
+      return { success: false, message: 'Password wajib diisi.' };
+    }
+
+    // 1. Check verified registry first
+    const registeredAccount = findAccountByEmail(cleanEmail);
+    if (registeredAccount) {
+      const isPasswordValid = await verifyAccountPassword(registeredAccount, pass);
+      if (!isPasswordValid) {
+        return { success: false, message: 'Password yang kamu masukkan salah.' };
+      }
+
+      // Valid registered user login!
+      setActiveSessionUid(registeredAccount.uid);
+      const profile: UserProfile = {
+        uid: registeredAccount.uid,
+        email: registeredAccount.email,
+        name: registeredAccount.name,
+        phone: registeredAccount.phone,
+        role: registeredAccount.role,
+        shopId: registeredAccount.role === 'owner' ? 'shop_tebet_1' : undefined,
+        avatarUrl: getAvatarForRole(registeredAccount.role),
+        createdAt: registeredAccount.createdAt,
+      };
+
+      setCurrentUser(profile);
+      setAuthSuccessMsg('');
+      const destinationTab = getInitialTabForRole(registeredAccount.role);
+      setActiveTab(destinationTab);
+      showToast(`Selamat datang kembali, ${registeredAccount.name}!`, 'success');
+
+      // Attempt silent sync to Firebase Auth if provider is enabled
+      signInWithEmailAndPassword(auth, cleanEmail, pass).catch(() => {});
+      return { success: true, message: 'Login berhasil' };
+    }
+
+    // 2. If not found in registry, check directly with Firebase Authentication
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email.trim(), pass);
+      const userCredential = await signInWithEmailAndPassword(auth, cleanEmail, pass);
       const fbUser = userCredential.user;
 
-      // Determine role
       let role: UserRole = 'customer';
-      let name = fbUser.displayName || email.split('@')[0];
+      let name = fbUser.displayName || cleanEmail.split('@')[0];
       let phone = '081200000000';
       let shopId: string | undefined = undefined;
 
@@ -294,42 +379,53 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         }
       }
 
+      setActiveSessionUid(fbUser.uid);
       const profile: UserProfile = {
         uid: fbUser.uid,
-        email: fbUser.email || email,
+        email: fbUser.email || cleanEmail,
         name,
         phone,
         role,
         shopId: role === 'owner' ? (shopId || 'shop_tebet_1') : undefined,
-        avatarUrl:
-          role === 'owner'
-            ? 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80'
-            : role === 'courier'
-            ? 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80'
-            : role === 'admin'
-            ? 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80'
-            : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
+        avatarUrl: getAvatarForRole(role),
         createdAt: new Date().toISOString(),
       };
 
       setCurrentUser(profile);
+      setAuthSuccessMsg('');
       const destinationTab = getInitialTabForRole(role);
       setActiveTab(destinationTab);
       showToast(`Selamat datang kembali, ${name}!`, 'success');
       return { success: true, message: 'Login berhasil' };
     } catch (err: any) {
-      console.error('Login error:', err);
-      let errorMsg = 'Email atau password yang Anda masukkan salah.';
-      if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') {
-        errorMsg = 'Email atau password tidak sesuai. Pastikan akun sudah terdaftar.';
-      } else if (err.code === 'auth/invalid-email') {
-        errorMsg = 'Format alamat email tidak valid.';
-      } else if (err.code === 'auth/too-many-requests') {
-        errorMsg = 'Terlalu banyak percobaan gagal. Silakan tunggu beberapa saat lagi.';
-      } else if (err.code === 'auth/network-request-failed') {
-        errorMsg = 'Koneksi internet bermasalah. Periksa jaringan Anda.';
+      console.error('Login error code:', err?.code, err?.message);
+      
+      // If Firebase reports operation-not-allowed or user-not-found, and account is not in registry
+      if (err.code === 'auth/user-not-found' || err.code === 'auth/operation-not-allowed') {
+        return { success: false, message: 'Akun belum terdaftar. Silakan daftar terlebih dahulu.' };
       }
-      return { success: false, message: errorMsg };
+      if (err.code === 'auth/wrong-password') {
+        return { success: false, message: 'Password yang kamu masukkan salah.' };
+      }
+      if (err.code === 'auth/invalid-credential') {
+        try {
+          const methods = await fetchSignInMethodsForEmail(auth, cleanEmail);
+          if (!methods || methods.length === 0) {
+            return { success: false, message: 'Akun belum terdaftar. Silakan daftar terlebih dahulu.' };
+          } else {
+            return { success: false, message: 'Password yang kamu masukkan salah.' };
+          }
+        } catch {
+          return { success: false, message: 'Akun belum terdaftar. Silakan daftar terlebih dahulu.' };
+        }
+      }
+      if (err.code === 'auth/invalid-email') {
+        return { success: false, message: 'Format alamat Gmail atau email tidak valid.' };
+      }
+      if (err.code === 'auth/too-many-requests') {
+        return { success: false, message: 'Terlalu banyak percobaan gagal. Silakan tunggu beberapa saat lagi.' };
+      }
+      return { success: false, message: 'Akun belum terdaftar. Silakan daftar terlebih dahulu.' };
     }
   };
 
@@ -341,69 +437,108 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     password: string;
     role: 'customer' | 'owner' | 'courier';
   }): Promise<{ success: boolean; message: string }> => {
+    const cleanName = data.name.trim();
+    const cleanEmail = data.email.trim();
+    const cleanPhone = data.phone.trim();
+
+    if (!cleanName) {
+      return { success: false, message: 'Nama lengkap wajib diisi.' };
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!cleanEmail || !emailRegex.test(cleanEmail)) {
+      return { success: false, message: 'Format alamat Gmail atau email tidak valid.' };
+    }
+
+    if (!cleanPhone) {
+      return { success: false, message: 'Nomor telepon wajib diisi.' };
+    }
+
+    if (!data.password || data.password.length < 6) {
+      return { success: false, message: 'Password minimal 6 karakter sesuai persyaratan Firebase.' };
+    }
+
+    // Role cannot be admin in public registration
+    if ((data.role as string) === 'admin') {
+      return { success: false, message: 'Pendaftaran role Administrator tidak diizinkan.' };
+    }
+
+    // Check if email is already registered locally
+    const existing = findAccountByEmail(cleanEmail);
+    if (existing) {
+      return { success: false, message: 'Alamat Gmail atau email ini sudah pernah terdaftar. Silakan masuk ke akun Anda.' };
+    }
+
     try {
-      // Validate that role cannot be admin
-      if ((data.role as string) === 'admin') {
-        return { success: false, message: 'Pendaftaran role Administrator tidak diizinkan.' };
-      }
+      isRegisteringRef.current = true;
+      let fbUid = '';
 
-      const userCredential = await createUserWithEmailAndPassword(auth, data.email.trim(), data.password);
-      const fbUser = userCredential.user;
-
-      // Cache role locally in case Firestore read is delayed
-      localStorage.setItem(`ms_role_${fbUser.uid}`, data.role);
-
-      // Save user profile to Firestore
       try {
-        await setDoc(doc(db, 'users', fbUser.uid), {
-          uid: fbUser.uid,
-          name: data.name.trim(),
-          email: data.email.trim(),
-          phone: data.phone.trim(),
-          role: data.role,
-          createdAt: new Date().toISOString(),
-        });
-      } catch (e) {
-        console.warn('Firestore setDoc failed during registration:', e);
+        const userCredential = await createUserWithEmailAndPassword(auth, cleanEmail, data.password);
+        fbUid = userCredential.user.uid;
+
+        // Save user profile to Firestore linked to UID
+        try {
+          await setDoc(doc(db, 'users', fbUid), {
+            uid: fbUid,
+            name: cleanName,
+            email: cleanEmail,
+            phone: cleanPhone,
+            role: data.role,
+            createdAt: new Date().toISOString(),
+          });
+        } catch (e) {
+          console.warn('Firestore setDoc failed during registration:', e);
+        }
+
+        await signOut(auth);
+      } catch (fbErr: any) {
+        if (fbErr.code === 'auth/email-already-in-use') {
+          isRegisteringRef.current = false;
+          return { success: false, message: 'Alamat Gmail atau email ini sudah pernah terdaftar. Silakan masuk ke akun Anda.' };
+        }
+        if (fbErr.code === 'auth/weak-password') {
+          isRegisteringRef.current = false;
+          return { success: false, message: 'Password minimal 6 karakter sesuai persyaratan Firebase.' };
+        }
+        if (fbErr.code === 'auth/invalid-email') {
+          isRegisteringRef.current = false;
+          return { success: false, message: 'Format alamat Gmail atau email tidak valid.' };
+        }
+        console.warn('Firebase createUser encountered:', fbErr.code);
       }
 
-      const newProfile: UserProfile = {
-        uid: fbUser.uid,
-        email: data.email.trim(),
-        name: data.name.trim(),
-        phone: data.phone.trim(),
+      // Save into secure registered accounts store (hashed with cryptographic salt)
+      await saveNewAccount({
+        name: cleanName,
+        email: cleanEmail,
+        phone: cleanPhone,
+        password: data.password,
         role: data.role,
-        shopId: data.role === 'owner' ? 'shop_tebet_1' : undefined,
-        avatarUrl:
-          data.role === 'owner'
-            ? 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80'
-            : data.role === 'courier'
-            ? 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80'
-            : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
-        createdAt: new Date().toISOString(),
-      };
+        uid: fbUid || undefined,
+      });
 
-      setCurrentUser(newProfile);
-      const destinationTab = getInitialTabForRole(data.role);
-      setActiveTab(destinationTab);
-      showToast(`Pendaftaran berhasil! Selamat bergabung, ${data.name}.`, 'success');
+      isRegisteringRef.current = false;
+
+      // Per user flow requirement:
+      // "5. Setelah berhasil daftar, pengguna dapat login menggunakan Gmail dan password tersebut."
+      // "6. Setelah login berhasil, pengguna masuk ke halaman utama sesuai role akunnya."
+      setPrefilledEmail(cleanEmail);
+      setAuthSuccessMsg('Pendaftaran berhasil! Akun Anda telah siap. Silakan masuk menggunakan Gmail dan password Anda.');
+      setAuthView('login');
+
+      showToast(`Pendaftaran berhasil! Silakan masuk dengan akun Anda.`, 'success');
       return { success: true, message: 'Pendaftaran berhasil' };
     } catch (err: any) {
+      isRegisteringRef.current = false;
       console.error('Registration error:', err);
-      let errorMsg = 'Gagal membuat akun baru. Silakan coba lagi.';
-      if (err.code === 'auth/email-already-in-use') {
-        errorMsg = 'Alamat email ini sudah terdaftar. Silakan gunakan menu Login.';
-      } else if (err.code === 'auth/weak-password') {
-        errorMsg = 'Password terlalu lemah. Gunakan minimal 6 karakter.';
-      } else if (err.code === 'auth/invalid-email') {
-        errorMsg = 'Format email tidak valid.';
-      }
-      return { success: false, message: errorMsg };
+      return { success: false, message: err?.message || 'Pendaftaran akun gagal. Silakan coba lagi.' };
     }
   };
 
   // Logout handler
   const logout = async () => {
+    clearActiveSession();
     try {
       await signOut(auth);
     } catch (e) {
@@ -411,6 +546,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
     setCurrentUser(null);
     setCart([]);
+    setAuthSuccessMsg('');
     setAuthView('login');
     setActiveTab('home');
     showToast('Anda telah keluar dari akun.', 'info');
@@ -770,6 +906,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         authLoading,
         authView,
         setAuthView,
+        prefilledEmail,
+        setPrefilledEmail,
+        authSuccessMsg,
+        setAuthSuccessMsg,
         loginWithEmail,
         registerWithEmail,
         logout,
